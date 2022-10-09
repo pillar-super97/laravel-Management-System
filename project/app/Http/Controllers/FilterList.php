@@ -86,7 +86,7 @@ class FilterList extends Controller
 			if(!empty($res))	
 			{
 				foreach ($res as $key => $value) {
-					array_push($stores, (int)$res->id);
+					array_push($stores, (int)$value->id);
 				}
 			}	
 		}
@@ -170,6 +170,9 @@ class FilterList extends Controller
 											if(!empty($div)){
 												foreach ($div as $key => $value) {
 													array_push($down_stores, (int)$value->id);
+													$div = DB::table('areas')->where('id', $value->apr)->first();
+													if(!empty($div))
+													array_push($down_areas, (int)$div->id);
 												}
 											}
 										}
@@ -200,6 +203,9 @@ class FilterList extends Controller
 									if(!empty($div)){
 										foreach ($div as $key => $value) {
 											array_push($down_stores, (int)$value->id);
+											$div = DB::table('areas')->where('id', $value->apr)->first();
+											if(!empty($div))
+											array_push($down_areas, (int)$div->id);
 										}
 									}
 								}
@@ -225,6 +231,9 @@ class FilterList extends Controller
 							if(!empty($div)){
 								foreach ($div as $key => $value) {
 									array_push($down_stores, (int)$value->id);
+									$div = DB::table('areas')->where('id', $value->apr)->first();
+									if(!empty($div))
+									array_push($down_areas, (int)$div->id);
 								}
 							}
 						}
@@ -243,8 +252,24 @@ class FilterList extends Controller
 						if(!empty($div)){
 							foreach ($div as $key => $value) {
 								array_push($down_stores, (int)$value->id);
+								$div = DB::table('areas')->where('id', $value->apr)->first();
+								if(!empty($div))
+								array_push($down_areas, (int)$div->id);
 							}
 						}
+					}
+				}
+			}
+			
+		if(!empty($request->store)){
+			$div = preg_split ("/\,/", $request->store);
+			foreach ($div as $key => $store) {
+				array_push($down_stores, (int)$store);
+					$value = DB::table('stores')->where('id', $store)->first();
+					if(!empty($value)){
+						$div = DB::table('areas')->where('id', $value->apr)->first();
+						if(!empty($div))
+						array_push($down_areas, (int)$div->id);
 					}
 				}
 			}
