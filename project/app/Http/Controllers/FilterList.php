@@ -50,13 +50,6 @@ class FilterList extends Controller
 			$arr = preg_split ("/\,/", $request->district);
 			foreach ($arr as $key => $value) {
 				array_push($districts, (int)$value);
-				$tmp_division = [];
-				
-				$res = District::where('id', $value)->first();
-				if(!empty($res))
-					$s = $res->division;
-					if(!empty($s))
-						array_push($tmp_division, $s->id);
 			}
 		}
 
@@ -299,6 +292,49 @@ class FilterList extends Controller
 		);	
 	}
 
+	public function __append_name($req)
+	{
+		$res = array('Associate' => [], 'Client'=> [], 'Division'=> [], 'District'=> [], 'Area'=> [], 'Store'=> []);
+
+		foreach ($req['Associate'] as $key => $value) {
+			$association = DB::table('associations')->where('id', $value)->first();
+			if(!empty($association)){ 
+				$res['Associate'][$value] = $association->name;
+			}
+		}
+		foreach ($req['Client'] as $key => $value) {
+			$client = DB::table('clients')->where('id', $value)->first();
+			if(!empty($client)){ 
+				$res['Client'][$value] = $client->name;
+			}
+		}
+		foreach ($req['Division'] as $key => $value) {
+			$division = DB::table('divisions')->where('id', $value)->first();
+			if(!empty($division)){ 
+				$res['Division'][$value] = $division->name;
+			}
+		}
+		foreach ($req['District'] as $key => $value) {
+			$district = DB::table('districts')->where('id', $value)->first();
+			if(!empty($district)){ 
+				$res['District'][$value] = $district->number;
+			}
+		}
+		foreach ($req['Area'] as $key => $value) {
+			$area = DB::table('areas')->where('id', $value)->first();
+			if(!empty($area)){ 
+				$res['Area'][$value] = $area->title;
+			}
+		}
+		foreach ($req['Store'] as $key => $value) {
+			$store = DB::table('stores')->where('id', $value)->first();
+			if(!empty($store)){ 
+				$res['Store'][$value] = $store->name;
+			}
+		}
+		return $res;
+	}
+
     public function __invoke(Request $request)
     {		
 		$result = array('Associate' => [], 'Client'=> [], 'Division'=> [], 'District'=> [], 'Area'=> [], 'Store'=> []);
@@ -378,6 +414,7 @@ class FilterList extends Controller
 			$result = __intersect($ret_associations, $result, $state);
 			$state = true;
 		}	
-		return Response::json(__json_encode($result));
+		return Response::json(FilterList::__append_name($result));
+		// return Response::json(__json_encode($result));
     }
 }
